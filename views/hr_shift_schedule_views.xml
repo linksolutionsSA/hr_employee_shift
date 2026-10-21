@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="hr_shift_schedule_view_tree"
+        model="ir.ui.view">
+        <field name="name">hr.shift.schedule.view.tree</field>
+        <field name="model">hr.shift.schedule</field>
+        <field name="arch"
+            type="xml">
+            <list string="My Shifts"
+                create="false"
+                edit="false"
+                delete="false">
+                <field name="employee_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="hr_shift" />
+                <field name="company_id"
+                    groups="base.group_multi_company" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="hr_shift_schedule_view_calendar"
+        model="ir.ui.view">
+        <field name="name">hr.shift.schedule.view.calendar</field>
+        <field name="model">hr.shift.schedule</field>
+        <field name="arch"
+            type="xml">
+            <calendar string="My Shifts"
+                date_start="start_date"
+                date_stop="end_date"
+                color="hr_shift"
+                quick_create="false"
+                event_open_popup="true"
+                create="false"
+                delete="false"
+                mode="month">
+                <field name="employee_id" />
+                <field name="hr_shift" />
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="hr_shift_schedule_view_search"
+        model="ir.ui.view">
+        <field name="name">hr.shift.schedule.view.search</field>
+        <field name="model">hr.shift.schedule</field>
+        <field name="arch"
+            type="xml">
+            <search string="Search My Shifts">
+                <searchpanel>
+                    <field name="company_id"
+                        icon="fa-users"
+                        select="multi"
+                        enable_counters="1" />
+                    <field name="department_id"
+                        icon="fa-clock-o"
+                        select="multi"
+                        enable_counters="1" />
+                </searchpanel>
+                <field name="employee_id"
+                    string="Employee/BadgeID"
+                    filter_domain="['|', ('employee_id', 'ilike', self), ('employee_id.barcode', 'ilike', self)]" />
+                <field name="hr_shift" />
+                <group expand="0"
+                    string="Group By">
+                    <filter string="Employee"
+                        name="group_by_employee"
+                        context="{'group_by': 'employee_id'}" />
+                    <filter string="Shift"
+                        name="group_by_shift"
+                        context="{'group_by': 'hr_shift'}" />
+                    <filter string="Department"
+                        name="group_by_department"
+                        context="{'group_by': 'department_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="hr_shift_schedule_view_form"
+        model="ir.ui.view">
+        <field name="name">hr.shift.schedule.view.form</field>
+        <field name="model">hr.shift.schedule</field>
+        <field name="arch"
+            type="xml">
+            <form string="My Shifts"
+                create="false"
+                edit="false"
+                delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" />
+                            <field name="hr_shift" />
+                        </group>
+                        <group>
+                            <field name="start_date" />
+                            <field name="end_date" />
+                            <field name="company_id"
+                                groups="base.group_multi_company" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hr_shift_schedule_my_shifts"
+        model="ir.actions.act_window">
+        <field name="name">My Shifts</field>
+        <field name="res_model">hr.shift.schedule</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id"
+            ref="hr_shift_schedule_view_search" />
+        <field name="context">{'group_by': ['company_id', 'employee_id']}</field>
+        <field name="domain">[('company_id', 'in', context.get('allowed_company_ids'))]</field>
+        <field name="help"
+            type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No shifts found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_hr_shift_schedule_my_shifts"
+        name="My Shifts"
+        action="action_hr_shift_schedule_my_shifts"
+        parent="hr_employee_shift.menu_shift"
+        sequence="5" />
+
+</odoo>

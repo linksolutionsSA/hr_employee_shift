@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="hr_overtime_schedule_view_tree"
+        model="ir.ui.view">
+        <field name="name">hr.overtime.schedule.view.tree</field>
+        <field name="model">hr.overtime.schedule</field>
+        <field name="arch"
+            type="xml">
+            <list string="My Overtime"
+                create="false"
+                edit="false"
+                delete="false">
+                <field name="employee_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="overtime_hours" />
+                <field name="company_id"
+                    groups="base.group_multi_company" />
+                <field name="state"
+                    decoration-warning="state == 'to_approve'"
+                    decoration-success="state == 'approved'" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="hr_overtime_schedule_view_calendar"
+        model="ir.ui.view">
+        <field name="name">hr.overtime.schedule.view.calendar</field>
+        <field name="model">hr.overtime.schedule</field>
+        <field name="arch"
+            type="xml">
+            <calendar string="My Overtime"
+                date_start="start_date"
+                date_stop="end_date"
+                color="employee_id"
+                quick_create="false"
+                event_open_popup="true"
+                create="false"
+                delete="false"
+                mode="month">
+                <field name="state"
+                    decoration-warning="state == 'to_approve'"
+                    decoration-success="state == 'approved'"
+                    filters="1" />
+                <field name="employee_id" />
+                <field name="overtime_hours" />
+                <field name="company_id"
+                    groups="base.group_multi_company"
+                    filters="1" />
+                <field name="department_id"
+                    filters="1" />
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="hr_overtime_schedule_view_form"
+        model="ir.ui.view">
+        <field name="name">hr.overtime.schedule.view.form</field>
+        <field name="model">hr.overtime.schedule</field>
+        <field name="arch"
+            type="xml">
+            <form string="My Overtime"
+                create="false"
+                edit="false"
+                delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" />
+                            <field name="overtime_hours" />
+                        </group>
+                        <group>
+                            <field name="start_date" />
+                            <field name="end_date" />
+                            <field name="company_id"
+                                groups="base.group_multi_company" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="hr_overtime_schedule_view_search"
+        model="ir.ui.view">
+        <field name="name">hr.overtime.schedule.view.search</field>
+        <field name="model">hr.overtime.schedule</field>
+        <field name="arch"
+            type="xml">
+            <search string="Search My Overtime">
+                <field name="employee_id"
+                    string="Employee Name/Badge ID/Iqama"
+                    filter_domain="['|', '|', ('employee_id.name', 'ilike', self), ('employee_id.barcode', '=', self), ('employee_id.identification_id', '=', self)]" />
+                <searchpanel>
+                    <field name="company_id"
+                        groups="base.group_multi_company"
+                        icon="fa-users"
+                        enable_counters="1"
+                        select="multi" />
+                    <field name="department_id"
+                        icon="fa-clock-o"
+                        enable_counters="1"
+                        select="multi" />
+                </searchpanel>
+                <group expand="0"
+                    string="Group By">
+                    <filter string="Employee"
+                        name="group_by_employee"
+                        context="{'group_by': 'employee_id'}" />
+                    <filter string="Department"
+                        name="group_by_department"
+                        context="{'group_by': 'department_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hr_overtime_schedule_my_overtime"
+        model="ir.actions.act_window">
+        <field name="name">My Overtime</field>
+        <field name="res_model">hr.overtime.schedule</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id"
+            ref="hr_overtime_schedule_view_search" />
+        <field name="context">{'group_by': ['company_id', 'employee_id']}</field>
+        <field name="domain">[('company_id', 'in', context.get('allowed_company_ids'))]</field>
+        <field name="help"
+            type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No overtime found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_hr_overtime_schedule_my_overtime"
+        name="My Overtime"
+        action="action_hr_overtime_schedule_my_overtime"
+        parent="hr_employee_shift.menu_shift"
+        sequence="6" />
+
+</odoo>

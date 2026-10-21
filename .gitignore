@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Odoo / runtime artefacts
+*.log
+*.pid
+*.sock
+*.db
+*.sqlite
+*.sqlite3
+
+# Translations: keep *.po / *.pot, drop compiled and editor leftovers
+*.mo
+*.po~
+*.pot~
+i18n/*.bak
+
+# Local env / secrets
+.env
+.env.*
+*.local
+
+# Backups, archives, patches
+*.bak
+*.orig
+*.rej
+*.tmp
+*.temp
+*.tar.gz
+*.zip
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Claude Code local state
+.claude/

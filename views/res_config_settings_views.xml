@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.hr.shift</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form" />
+            <field name="arch" type="xml">
+
+                <xpath expr="//form" position="inside">
+
+                    <app data-string="Employee Shifts"
+                        string="Employee Shift Settings"
+                        name="hr_employee_shift">
+
+                        <block title="Automation" name="hr_shift_automation_settings">
+                            <setting string="Auto-Accept Shifts"
+                                help="Enable this to automatically accept employee shifts.">
+                                <div class="o_setting_right_pane">
+                                    <field name="shift_auto_accept" />
+                                </div>
+                            </setting>
+                            <setting string="Number of off days"
+                                help="Set the number of off days for employees.">
+                                <div class="text-muted">
+                                    <field name="number_of_off_days" />
+                                </div>
+                            </setting>
+                            <setting string="Maximum weekly overtime hours"
+                                help="Set the maximum number of overtime hours allowed per week.">
+                                <div class="text-muted">
+                                    <field name="max_overtime_per_week" />
+                                </div>
+                            </setting>
+                            <setting string="Overtime Rule Code"
+                                help="Set the overtime rule code for overtime calculation.">
+                                <div class="text-muted">
+                                    <field name="overtime_rule_code" />
+                                </div>
+                            </setting>
+                            <setting string="Cutoff Date"
+                                help="Set the cutoff date for shift requests.">
+                                <div class="text-muted">
+                                    <field name="cutoff_date" />
+                                </div>
+                            </setting>
+                        </block>
+
+                    </app>
+
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_employee_shift_config_settings_action" model="ir.actions.act_window">
+            <field name="name">Shift Settings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'hr_employee_shift'}</field>
+        </record>
+
+        <menuitem id="hr_employee_shift_settings_menu"
+            name="Employee Shifts"
+            parent="base.menu_administration"
+            sequence="100"
+            action="hr_employee_shift_config_settings_action"
+            groups="base.group_system" />
+
+    </data>
+</odoo>

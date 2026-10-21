@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="hr_shift_request_view_tree"
+        model="ir.ui.view">
+        <field name="name">hr.shift.request.view.tree</field>
+        <field name="model">hr.shift.request</field>
+        <field name="arch"
+            type="xml">
+            <list string="Shift Requests">
+                <field name="name" />
+                <field name="shift_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="state" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="hr_shift_request_view_form"
+        model="ir.ui.view">
+        <field name="name">hr.shift.request.view.form</field>
+        <field name="model">hr.shift.request</field>
+        <field name="arch"
+            type="xml">
+            <form string="Shift Request">
+                <header>
+                    <button name="action_submit"
+                        string="Submit"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="state != 'draft'" />
+                    <button name="action_approve"
+                        string="Approve"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="state != 'to_approve'"
+                        groups="hr.group_hr_manager" />
+                    <button name="action_reject"
+                        string="Reject"
+                        type="object"
+                        invisible="state != 'to_approve'"
+                        groups="hr.group_hr_manager" />
+                    <button name="action_reset_to_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        invisible="state not in ['rejected', 'approved']"
+                        groups="hr.group_hr_manager" />
+                    <field name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,to_approve,approved,rejected"
+                        readonly="True" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"
+                                readonly="True" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="request_type"
+                                readonly="state != 'draft'" />
+                            <field name="shift_id"
+                                options="{'no_quick_create': True, 'no_create_edit':True}"
+                                readonly="state != 'draft'"
+                                domain="[('company_id', '=', company_id)]" />
+                            <field name="start_date"
+                                readonly="state != 'draft'" />
+                            <field name="end_date"
+                                readonly="state != 'draft'" />
+                        </group>
+                        <group>
+                            <field name="approved_by_id" />
+                            <field name="company_id"
+                                readonly="state != 'draft'" />
+                            <field name="department_id"
+                                readonly="state != 'draft'"
+                                domain="[('company_id', '=', company_id)]" />
+                            <field name="default_day_off"
+                                readonly="state != 'draft'" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Employees Lines">
+                            <button name="%(action_hr_shift_request_add_employees)d"
+                                string="Add Employees"
+                                type="action"
+                                class="oe_highlight"
+                                context="{'default_shift_request_id': id}"
+                                invisible="state != 'draft'" />
+                            <field name="shift_request_line_ids"
+                                readonly="state != 'draft'">
+                                <list create="false">
+                                    <field name="employee_id" />
+                                    <field name="off_day" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- Calendar View for Shift Requests -->
+    <record id="hr_shift_request_view_calendar"
+        model="ir.ui.view">
+        <field name="name">hr.shift.request.calendar</field>
+        <field name="model">hr.shift.request</field>
+        <field name="arch"
+            type="xml">
+            <calendar string="Shift Schedule"
+                date_start="start_date"
+                date_stop="end_date"
+                mode="month"
+                color="calendar_color"
+                quick_create="0"
+                event_open_popup="true">
+                <field name="request_type"
+                    filters="1"
+                    decoration-warning="1" />
+                <field name="name" />
+                <field name="shift_id"
+                    filters="1" />
+                <field name="shift_request_line_ids"
+                    string="Employees"
+                    widget="one2many_list" />
+                <field name="company_id"
+                    filters="1" />
+                <field name="state"
+                    decoration-success="state == 'approved'"
+                    decoration-danger="state == 'rejected'" />
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Search View for Shift Requests -->
+    <record id="hr_shift_request_view_search"
+        model="ir.ui.view">
+        <field name="name">hr.shift.request.search</field>
+        <field name="model">hr.shift.request</field>
+        <field name="arch"
+            type="xml">
+            <search string="Search Shift Requests">
+                <searchpanel>
+                    <field name="company_id" select="multi" enable_counters="1" />
+                    <field name="request_type" select="multi" enable_counters="1" />
+                    <field name="shift_id" select="multi" enable_counters="1" />
+                </searchpanel>
+                <field name="shift_request_line_ids"
+                    string="Employee"
+                    filter_domain="[('shift_request_line_ids.name', 'ilike', self)]" />
+                <field name="name"
+                    string="Shift Name" />
+                <field name="shift_id" />
+                <field name="state" />
+                <filter string="Draft"
+                    name="state_draft"
+                    domain="[('state', '=', 'draft')]" />
+                <filter string="To Approve"
+                    name="state_to_approve"
+                    domain="[('state', '=', 'to_approve')]" />
+                <filter string="Approved"
+                    name="state_approved"
+                    domain="[('state', '=', 'approved')]" />
+                <filter string="Rejected"
+                    name="state_rejected"
+                    domain="[('state', '=', 'rejected')]" />
+                <group expand="0"
+                    string="Group By">
+                    <filter string="Calendar"
+                        name="group_by_shift"
+                        context="{'group_by': 'shift_id'}" />
+                    <filter string="State"
+                        name="group_by_state"
+                        context="{'group_by': 'state'}" />
+                    <filter string="Department"
+                        name="group_by_department"
+                        context="{'group_by': 'department_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for Shift Schedule -->
+    <record id="hr_shift_schedule_action"
+        model="ir.actions.act_window">
+        <field name="name">Shift Schedule</field>
+        <field name="res_model">hr.shift.request</field>
+        <field name="view_mode">calendar,form</field>
+        <field name="search_view_id"
+            ref="hr_shift_request_view_search" />
+        <field name="domain">[('company_id', 'in', context.get('allowed_company_ids'))]</field>
+        <field name="help"
+            type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new shift request!
+            </p>
+        </field>
+    </record>
+
+    <!-- Action for Shift Requests -->
+    <record id="hr_shift_request_action"
+        model="ir.actions.act_window">
+        <field name="name">Shift Requests</field>
+        <field name="res_model">hr.shift.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menuitem for Shift Schedule -->
+    <menuitem id="hr_shift_schedule_menu"
+        name="Shift Schedule"
+        action="hr_shift_schedule_action"
+        parent="hr_employee_shift.menu_shift"
+        groups="hr_employee_shift.group_hr_shift_manager,hr_employee_shift.group_hr_shift_admins"
+        sequence="1" />
+
+    <!-- Menuitem for Shift Requests -->
+    <menuitem id="hr_shift_request_menu"
+        name="Shift Requests"
+        action="hr_shift_request_action"
+        parent="hr_employee_shift.menu_shift"
+        groups="hr_employee_shift.group_hr_shift_manager,hr_employee_shift.group_hr_shift_admins"
+        sequence="2" />
+</odoo>
